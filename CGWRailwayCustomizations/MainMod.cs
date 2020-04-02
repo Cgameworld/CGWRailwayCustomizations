@@ -1,6 +1,8 @@
 ﻿using ColossalFramework.UI;
+using Harmony;
 using ICities;
 using System;
+using System.Reflection;
 using UnityEngine;
 
 namespace CGWRailwayCustomizations
@@ -17,7 +19,53 @@ namespace CGWRailwayCustomizations
             get { return "TBA"; }
         }
     }
+
+    public class ModThreading : ThreadingExtensionBase
+    {
+
+        public override void OnUpdate(float realTimeDelta, float simulationTimeDelta)
+        {
+
+            if (Input.GetKey(KeyCode.F2))
+            {
+
+            }
+        }
+    }
+
     public class ModLoading : LoadingExtensionBase
+    {
+
+        public override void OnCreated(ILoading loading)
+        {
+            base.OnCreated(loading);
+            var harmony = HarmonyInstance.Create("cgameworld.railwaycustom");
+            harmony.PatchAll(Assembly.GetExecutingAssembly());
+        }
+
+        public override void OnLevelLoaded(LoadMode mode)
+        {
+            base.OnLevelLoaded(mode);
+        }
+
+    }
+
+    //runs customizations at after LoadingWrapper instead at OnLevelLoaded  - thanks kian.zarrin for the tip!
+    [HarmonyPatch(typeof(LoadingWrapper))]
+    [HarmonyPatch("OnLevelLoaded")]
+    public class Patch
+    {
+
+        static void Postfix()
+        {
+            ReplaceTracks tracks = new ReplaceTracks();
+            tracks.GetItems();
+            tracks.ReplaceToShnGSleepers();
+        }
+    }
+
+
+    public class ReplaceTracks
     {
         private Mesh replaceToMesh1T;
         private Material replaceToMaterial1T;
@@ -30,22 +78,11 @@ namespace CGWRailwayCustomizations
         private Mesh replaceToMesh2T;
         private Material replaceToMaterial2T;
 
-
+        //make things work without BVU or only BVU!
         string[] tobeReplacedNames1T = { "r-sleepers-s", "r-sleepersw_0.023" };
         string[] tobeReplacedNames2T = { "r-sleepers", "r-sleepersw_0.008" };
 
-        public override void OnLevelLoaded(LoadMode mode)
-        {
-            //load only in-game
-            if (mode == LoadMode.LoadGame || mode == LoadMode.LoadScenario)
-            {
-                GetItems();
-                ReplaceToShnGSleepers();
-                Debug.Log("CGW Railway Customization Completed");
-            }
-        }
-
-        private void GetItems()
+        public void GetItems()
         {
             foreach (var prefab in Resources.FindObjectsOfTypeAll<NetInfo>())
             {
@@ -84,7 +121,7 @@ namespace CGWRailwayCustomizations
             }
         }
 
-        private void ReplaceToShnGSleepers()
+        public void ReplaceToShnGSleepers()
         {
 
             foreach (var prefab in Resources.FindObjectsOfTypeAll<NetInfo>())
@@ -92,6 +129,7 @@ namespace CGWRailwayCustomizations
                 //split up because of nodeless tracks!
                 if (prefab.m_segments.Length >= 2)
                 {
+                    Debug.Log("Segments > 2" + prefab.name);
                     foreach (var oldname in tobeReplacedNames1T)
                     {
                         if (prefab.m_segments[1].m_segmentMesh.name == oldname)
@@ -111,7 +149,9 @@ namespace CGWRailwayCustomizations
                     }
                 }
 
-                if (prefab.m_nodes.Length > 2) {
+                if (prefab.m_nodes.Length > 2)
+                {
+                    Debug.Log("Nodes > 2" + prefab.name);
 
                     foreach (var oldname in tobeReplacedNames1T)
                     {
