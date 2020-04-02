@@ -69,16 +69,18 @@ namespace CGWRailwayCustomizations
                     replaceToMaterial2T = prefab.m_segments[1].m_segmentMaterial;
                 }
 
-                //get bridge BVU regular 1L sdrrail
-                if (prefab.name == "1847646595.R69Railway W GrCo 1x2 B0")
+                //get and remove inner gauntlet tracks on bridge BVU tracks
+                if (prefab.name == "1847646595.R69Railway W GrCo 1x2 B0" || prefab.name == "1847646595.R69Railway W GrCo 1x2 B1")
                 {
                     prefab.m_segments[7].m_segmentMesh = null;
                 }
 
-                if (prefab.name == "1847646595.R69Railway W GrCo 2x2 B0")
+                if (prefab.name == "1847646595.R69Railway W GrCo 2x2 B0" || prefab.name == "1847646595.R69Railway W GrCo 2x2 B1")
                 {
                     prefab.m_segments[7].m_segmentMesh = null;
                 }
+
+                //nodeless tracks?
             }
         }
 
@@ -88,14 +90,33 @@ namespace CGWRailwayCustomizations
             foreach (var prefab in Resources.FindObjectsOfTypeAll<NetInfo>())
             {
                 //split up because of nodeless tracks!
-                if (prefab.m_segments.Length >= 2 && prefab.m_nodes.Length > 2)
+                if (prefab.m_segments.Length >= 2)
                 {
                     foreach (var oldname in tobeReplacedNames1T)
                     {
-                        if (prefab.m_segments[1].m_segmentMesh.name == oldname || prefab.m_nodes[1].m_nodeMesh.name == oldname)
+                        if (prefab.m_segments[1].m_segmentMesh.name == oldname)
                         {
                             prefab.m_segments[1].m_segmentMesh = replaceToMesh1T;
                             prefab.m_segments[1].m_segmentMaterial = replaceToMaterial1T;
+                        }
+                    }
+
+                    foreach (var oldname2 in tobeReplacedNames2T)
+                    {
+                        if (prefab.m_segments[1].m_segmentMesh.name == oldname2)
+                        {
+                            prefab.m_segments[1].m_segmentMesh = replaceToMesh2T;
+                            prefab.m_segments[1].m_segmentMaterial = replaceToMaterial2T;
+                        }
+                    }
+                }
+
+                if (prefab.m_nodes.Length > 2) {
+
+                    foreach (var oldname in tobeReplacedNames1T)
+                    {
+                        if (prefab.m_nodes[1].m_nodeMesh.name == oldname)
+                        {
                             prefab.m_nodes[1].m_nodeMesh = replaceToMesh1T;
                             prefab.m_nodes[1].m_nodeMaterial = replaceToMaterial1T;
                         }
@@ -103,10 +124,8 @@ namespace CGWRailwayCustomizations
 
                     foreach (var oldname2 in tobeReplacedNames2T)
                     {
-                        if (prefab.m_segments[1].m_segmentMesh.name == oldname2 || prefab.m_nodes[1].m_nodeMesh.name == oldname2)
+                        if (prefab.m_nodes[1].m_nodeMesh.name == oldname2)
                         {
-                            prefab.m_segments[1].m_segmentMesh = replaceToMesh2T;
-                            prefab.m_segments[1].m_segmentMaterial = replaceToMaterial2T;
                             prefab.m_nodes[1].m_nodeMesh = replaceToMesh2T;
                             prefab.m_nodes[1].m_nodeMaterial = replaceToMaterial2T;
                         }
