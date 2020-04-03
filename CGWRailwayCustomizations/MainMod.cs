@@ -7,31 +7,6 @@ using UnityEngine;
 
 namespace CGWRailwayCustomizations
 {
-    public class ModInfo : IUserMod
-    {
-        public string Name
-        {
-            get { return "CGW Railway Customizations"; }
-        }
-
-        public string Description
-        {
-            get { return "Applies Customizations to RWY/BVU tracks"; }
-        }
-    }
-
-    public class ModThreading : ThreadingExtensionBase
-    {
-
-        public override void OnUpdate(float realTimeDelta, float simulationTimeDelta)
-        {
-
-            if (Input.GetKey(KeyCode.F2))
-            {
-
-            }
-        }
-    }
 
     public class ModLoading : LoadingExtensionBase
     {
@@ -58,9 +33,22 @@ namespace CGWRailwayCustomizations
 
         static void Postfix()
         {
+            Replacer.Run();
+        }
+    }
+
+    public class Replacer
+    {
+        public static void Run()
+        {
+            ModConfiguration config = Configuration<ModConfiguration>.Load();
             ReplaceTracks tracks = new ReplaceTracks();
-            tracks.GetItems();
-            tracks.ReplaceToShnGSleepers();
+            tracks.GetItems(config.BVUGauntletTracksRemove);
+            if (config.ShnGSleeperReplace)
+            {
+                Debug.Log("shn sleepers replaced");
+                tracks.ReplaceToShnGSleepers();
+            }
         }
     }
 
@@ -78,11 +66,11 @@ namespace CGWRailwayCustomizations
         private Mesh replaceToMesh2T;
         private Material replaceToMaterial2T;
 
-        //make things work without BVU or only BVU!
+
         string[] tobeReplacedNames1T = { "r-sleepers-s", "r-sleepersw_0.023" };
         string[] tobeReplacedNames2T = { "r-sleepers", "r-sleepersw_0.008" };
 
-        public void GetItems()
+        public void GetItems(bool removeGauntletTracks)
         {
             foreach (var prefab in Resources.FindObjectsOfTypeAll<NetInfo>())
             {
@@ -106,17 +94,20 @@ namespace CGWRailwayCustomizations
                     replaceToMaterial2T = prefab.m_segments[1].m_segmentMaterial;
                 }
 
-                //get and remove inner gauntlet tracks on bridge BVU tracks
-                if (prefab.name == "1847646595.R69Railway W GrCo 1x2 B0" || prefab.name == "1847646595.R69Railway W GrCo 1x2 B1")
+                if (removeGauntletTracks)
                 {
-                    prefab.m_segments[7].m_segmentMesh = null;
-                }
+                    //get and remove inner gauntlet tracks on bridge BVU tracks
+                    if (prefab.name == "1847646595.R69Railway W GrCo 1x2 B0" || prefab.name == "1847646595.R69Railway W GrCo 1x2 B1")
+                    {
+                        prefab.m_segments[7].m_segmentMesh = null;
+                    }
 
-                if (prefab.name == "1847646595.R69Railway W GrCo 2x2 B0" || prefab.name == "1847646595.R69Railway W GrCo 2x2 B1")
-                {
-                    prefab.m_segments[7].m_segmentMesh = null;
-                }
+                    if (prefab.name == "1847646595.R69Railway W GrCo 2x2 B0" || prefab.name == "1847646595.R69Railway W GrCo 2x2 B1")
+                    {
+                        prefab.m_segments[7].m_segmentMesh = null;
+                    }
 
+                }
                 //nodeless tracks?
             }
         }
