@@ -16,7 +16,7 @@ namespace CGWRailwayCustomizations
 
         public string Description
         {
-            get { return "TBA"; }
+            get { return "Applies Customizations to RWY/BVU tracks"; }
         }
     }
 
