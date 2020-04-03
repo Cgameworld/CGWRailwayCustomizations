@@ -31,7 +31,7 @@ namespace CGWRailwayCustomizations
                 Configuration<ModConfiguration>.Save();
             });
 
-            helper.AddCheckbox("Remove inner gauntlet tracks from bridge elevation BVU tracks", config.BVUGauntletTracksRemove, sel =>
+            helper.AddCheckbox("Removes inner gauntlet tracks from bridge elevation BVU tracks", config.BVUGauntletTracksRemove, sel =>
             {
                 config.BVUGauntletTracksRemove = sel;
                 Configuration<ModConfiguration>.Save();
