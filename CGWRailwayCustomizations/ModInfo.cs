@@ -25,7 +25,7 @@ namespace CGWRailwayCustomizations
             ModConfiguration config = Configuration<ModConfiguration>.Load();
             ModConfiguration loadinginstuc = new ModConfiguration();
 
-            helper.AddCheckbox("Use shinkansen slepers on concrete RWY based tracks", config.ShnGSleeperReplace, sel =>
+            helper.AddCheckbox("Use shinkansen sleepers on concrete RWY based tracks", config.ShnGSleeperReplace, sel =>
             {
                 config.ShnGSleeperReplace = sel;
                 Configuration<ModConfiguration>.Save();
