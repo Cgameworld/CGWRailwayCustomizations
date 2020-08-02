@@ -9,15 +9,9 @@ namespace CGWRailwayCustomizations
 {
     public class ModInfo : IUserMod
     {
-        public string Name
-        {
-            get { return "CGW Railway Customizations"; }
-        }
+        public string Name => "CGW Railway Customizations";
 
-        public string Description
-        {
-            get { return "Applies Customizations to RWY/BVU tracks"; }
-        }
+        public string Description => "Applies Customizations to RWY/BVU tracks";
 
         public void OnSettingsUI(UIHelperBase helper)
         {
